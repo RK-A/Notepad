@@ -17,7 +17,7 @@ namespace Notepad
         private string filePath;
         private string fileName;
         private bool changed;
-        //private Font font;
+        private Font mainFont;
         private Encoding encoding;
 
         
@@ -26,17 +26,25 @@ namespace Notepad
         {
             InitializeComponent();
             this.KeyPreview = true;
-            encoding = Encoding.UTF8;
+            richTextBox1.Height = statusStrip1.Location.Y - statusStrip1.Height;
+            //кодировка
+            encoding = Encoding.UTF8;   
+            //название файла по умолчанию
             fileName = "Undetected";
+
+            // Настройка шрифта используемого по умолчанию 
+            mainFont = new Font(Form.DefaultFont.FontFamily, 10F);
+
             changed = false;
+            richTextBox1.ReadOnly = true;
         }
 
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(richTextBox1.Text))
             {
-                MessageBox.Show("Печать без файла");
+                MessageBox.Show("Пустая печать");
             }
             else
             {
@@ -44,12 +52,17 @@ namespace Notepad
             }
         }
 
+        private void RichTextBoxAviable()
+        {
+            richTextBox1.ReadOnly = false;
+            richTextBox1.Font = mainFont;
+        }
         private void OpenPrintDialog()
         {
             using (PrintDialog printDialog = new PrintDialog())
             {
                 PrintDocument printDocument = new PrintDocument();
-                printDocument.DocumentName = filePath;
+                printDocument.DocumentName = fileName;
                 printDocument.PrintPage += PrintPageHandler;
                 if (printDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -91,12 +104,14 @@ namespace Notepad
                     {
                         fileContent = reader.ReadToEnd();
                     }
+
+                    changed = true;
+                    richTextBox1.Text = fileContent;
+                    changed = false;
+                    this.Text = fileName + " - " + Text.Split('-').Last().Trim();
+                    RichTextBoxAviable();
                 }
             }
-            changed = true;
-            richTextBox1.Text = fileContent;
-            changed = false;
-            this.Text = fileName + " - " + Text.Split('-').Last().Trim();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -169,10 +184,6 @@ namespace Notepad
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!changed)
-            {
-                return;
-            }
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
                 saveFileDialog.Title = "Save file";
@@ -187,13 +198,14 @@ namespace Notepad
             }
         }
 
-        private void createToolStripMenuItem_Click(object sender, EventArgs e)
+        private void createToolStripMenuItem_Click(object sender, EventArgs e)  
         {
             if (!changed)
             {
                 fileName = "Undetected";
                 this.Text = fileName +" - " + Text.Split('-').Last().Trim();
                 richTextBox1.Text = string.Empty;
+                RichTextBoxAviable();
                 return;
             }
             if (!string.IsNullOrEmpty(filePath))
@@ -242,6 +254,28 @@ namespace Notepad
             }
             changed = true;
             
+        }
+
+        private void richTextBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            int position = richTextBox1.SelectionStart;
+            int line = richTextBox1.GetLineFromCharIndex(position);
+            int firstIndex = richTextBox1.GetFirstCharIndexFromLine(line);
+            toolStripStatusLabel1.Text = $"Строка-{line+1} стлб-{position-firstIndex}";
+        }
+
+        private void richTextBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            int position = richTextBox1.SelectionStart;
+            int line = richTextBox1.GetLineFromCharIndex(position);
+            int firstIndex = richTextBox1.GetFirstCharIndexFromLine(line);
+            toolStripStatusLabel1.Text = $"Строка-{line + 1} стлб-{position - firstIndex}";
+        }
+
+        private void FormMain_SizeChanged(object sender, EventArgs e)
+        {
+
+            richTextBox1.Height = statusStrip1.Location.Y - statusStrip1.Height;
         }
     }
 }
