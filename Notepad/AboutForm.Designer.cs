@@ -60,7 +60,6 @@ namespace Notepad
             this.label2.Size = new System.Drawing.Size(162, 25);
             this.label2.TabIndex = 1;
             this.label2.Text = "Блокнот умеет:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // label3
             // 

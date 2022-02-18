@@ -35,8 +35,17 @@ namespace Notepad
             // Настройка шрифта используемого по умолчанию 
             mainFont = new Font(Form.DefaultFont.FontFamily, 10F);
 
+
+            // Минимальные размеры формы
+            this.MinimumSize = new Size(500,300);
+            // Другие настройки 
+
             changed = false;
             richTextBox1.ReadOnly = true;
+
+            numericUpDown1.Value = (decimal)richTextBox1.Font.Size;
+            numericUpDown1.Minimum = 8;
+            numericUpDown1.Maximum = 72;
         }
 
 
@@ -56,6 +65,7 @@ namespace Notepad
         {
             richTextBox1.ReadOnly = false;
             richTextBox1.Font = mainFont;
+            numericUpDown1.Value = (decimal)richTextBox1.Font.Size;
         }
         private void OpenPrintDialog()
         {
@@ -72,14 +82,15 @@ namespace Notepad
         }
         private void PrintPageHandler(object sender, PrintPageEventArgs e)
         {
+            Font font = richTextBox1.Font;
             int charactersOnPage = 0;
             int linesPerPage = 0;
             string stringToPrint = richTextBox1.Text;
-            e.Graphics.MeasureString(stringToPrint, this.Font,
+            e.Graphics.MeasureString(stringToPrint, font,
                 e.MarginBounds.Size, StringFormat.GenericTypographic,
                 out charactersOnPage, out linesPerPage);
 
-            e.Graphics.DrawString(stringToPrint, this.Font, Brushes.Black,
+            e.Graphics.DrawString(stringToPrint, font, Brushes.Black,
                 e.MarginBounds, StringFormat.GenericTypographic);
 
             stringToPrint = stringToPrint.Substring(charactersOnPage);
@@ -135,7 +146,7 @@ namespace Notepad
             }
             this.Close();
         }
-
+            
         private void fontToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (FontDialog fontDialog = new FontDialog())
@@ -282,6 +293,86 @@ namespace Notepad
         {
             AboutForm aboutForm = new AboutForm();
             aboutForm.ShowDialog();
+        }
+
+        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (colorDialog1.ShowDialog()== DialogResult.OK)
+            {
+                richTextBox1.SelectionColor = colorDialog1.Color;
+            }
+        }
+
+        private void iToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Font defaultF = richTextBox1.Font;
+            if (richTextBox1.SelectionFont.Style == (FontStyle.Italic | FontStyle.Bold))
+            {
+                richTextBox1.SelectionFont = new Font(defaultF.FontFamily, defaultF.Size, FontStyle.Bold);
+                return;
+            }
+            if (richTextBox1.SelectionFont.Style == FontStyle.Italic)
+            {
+                richTextBox1.SelectionFont = new Font(defaultF.FontFamily, defaultF.Size, FontStyle.Regular);
+                return;
+            }
+            if (richTextBox1.SelectionFont.Style == FontStyle.Bold)
+            {
+                richTextBox1.SelectionFont = new Font(defaultF.FontFamily, defaultF.Size, FontStyle.Bold | FontStyle.Italic);
+                return;
+            }
+            richTextBox1.SelectionFont = new Font(defaultF.FontFamily, defaultF.Size, FontStyle.Italic);
+        }
+
+        private void bToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Font defaultF = richTextBox1.Font;
+            if (richTextBox1.SelectionFont.Style == (FontStyle.Italic | FontStyle.Bold))
+            {
+                richTextBox1.SelectionFont = new Font(defaultF.FontFamily, defaultF.Size, FontStyle.Italic);
+                return;
+            }
+            if (richTextBox1.SelectionFont.Style == FontStyle.Bold)
+            {
+                richTextBox1.SelectionFont = new Font(defaultF.FontFamily, defaultF.Size, FontStyle.Regular);
+                return;
+            }
+            if (richTextBox1.SelectionFont.Style == FontStyle.Italic)
+            {
+                richTextBox1.SelectionFont = new Font(defaultF.FontFamily, defaultF.Size, FontStyle.Bold | FontStyle.Italic);
+                return;
+            }
+            richTextBox1.SelectionFont = new Font(defaultF.FontFamily, defaultF.Size, FontStyle.Bold);
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            richTextBox1.SelectionFont = new Font(richTextBox1.Font.FontFamily, (float)numericUpDown1.Value);
+
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(richTextBox1.SelectedText))
+                Clipboard.SetDataObject(richTextBox1.SelectedText);
+
+            
+        }
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IDataObject iData = Clipboard.GetDataObject();
+
+            if (iData.GetDataPresent(DataFormats.Text))
+            {
+                richTextBox1.SelectedText = (string)iData.GetData(DataFormats.Text);
+            }
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(richTextBox1.SelectedText))
+                Clipboard.SetDataObject(richTextBox1.SelectedText);
+                richTextBox1.SelectedText = string.Empty;
         }
     }
 }
