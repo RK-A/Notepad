@@ -277,5 +277,11 @@ namespace Notepad
 
             richTextBox1.Height = statusStrip1.Location.Y - statusStrip1.Height;
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutForm aboutForm = new AboutForm();
+            aboutForm.ShowDialog();
+        }
     }
 }
