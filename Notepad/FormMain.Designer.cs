@@ -55,6 +55,7 @@ namespace Notepad
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.settingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.domainUpDown1 = new System.Windows.Forms.DomainUpDown();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -231,7 +232,8 @@ namespace Notepad
             // 
             this.statusStrip1.AutoSize = false;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.toolStripStatusLabel1,
+            this.toolStripStatusLabel2});
             this.statusStrip1.Location = new System.Drawing.Point(0, 539);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -274,6 +276,13 @@ namespace Notepad
             this.domainUpDown1.Size = new System.Drawing.Size(97, 20);
             this.domainUpDown1.TabIndex = 4;
             this.domainUpDown1.SelectedItemChanged += new System.EventHandler(this.domainUpDown1_SelectedItemChanged);
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Padding = new System.Windows.Forms.Padding(0, 0, 30, 0);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(65, 17);
+            this.toolStripStatusLabel2.Text = "100%";
             // 
             // FormMain
             // 
@@ -330,6 +339,7 @@ namespace Notepad
         private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingToolStripMenuItem;
         private System.Windows.Forms.DomainUpDown domainUpDown1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
     }
 }
 

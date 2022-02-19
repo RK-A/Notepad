@@ -54,7 +54,7 @@ namespace Notepad
             domainUpDown1.SelectedItem = "UTF-8";
             changed = false;
 
-
+            richTextBox1.MouseWheel += new MouseEventHandler(this.richTextBox1_MouseWheel);
         }
 
 
@@ -411,23 +411,18 @@ namespace Notepad
             {
                 case "ASCII":
                     encoding = Encoding.ASCII;
-                    richTextBox1.AppendText("a");
                     break;
                 case "UTF-7":
                     encoding = Encoding.UTF7;
-                    richTextBox1.AppendText("7");
                     break;
                 case "UTF-8":
                     encoding = Encoding.UTF8;
-                    richTextBox1.AppendText("8");
                     break;
                 case "UTF-16":
                     encoding = Encoding.Unicode;
-                    richTextBox1.AppendText("16");
                     break;
                 case "UTF-32":
                     encoding = Encoding.UTF32;
-                    richTextBox1.AppendText("32");
                     break;
                 default:
                     break;
@@ -438,5 +433,11 @@ namespace Notepad
             }
             changed = true;
         }
+
+        private void richTextBox1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            toolStripStatusLabel2.Text = string.Concat(richTextBox1.ZoomFactor*100,"%");
+        }
+
     }
 }
