@@ -46,26 +46,25 @@ namespace Notepad
             numericUpDown1.Value = (decimal)richTextBox1.Font.Size;
             numericUpDown1.Minimum = 8;
             numericUpDown1.Maximum = 72;
-        }
+
+            domainUpDown1.Items.Clear();
+            domainUpDown1.Items.AddRange(new List<string>() 
+            { "ASCII", "UTF-7", "UTF-8", "UTF-16", "UTF-32" });
+            changed = true;
+            domainUpDown1.SelectedItem = "UTF-8";
+            changed = false;
 
 
-        private void printToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(richTextBox1.Text))
-            {
-                MessageBox.Show("Пустая печать");
-            }
-            else
-            {
-                OpenPrintDialog(); 
-            }
         }
+
 
         private void RichTextBoxAviable()
         {
+            changed = true;
             richTextBox1.ReadOnly = false;
             richTextBox1.Font = mainFont;
             numericUpDown1.Value = (decimal)richTextBox1.Font.Size;
+            changed = false;
         }
         private void OpenPrintDialog()
         {
@@ -97,6 +96,28 @@ namespace Notepad
 
             e.HasMorePages = (stringToPrint.Length > 0);
         }
+        private void SaveFile()
+        {
+            using (StreamWriter streamWriter = new StreamWriter(filePath, false, encoding))
+            {
+                foreach (var line  in richTextBox1.Text.Split('\n'))
+                {
+                    streamWriter.WriteLine(line);
+                }
+            }
+        }
+        //Обработка событий
+        private void printToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(richTextBox1.Text))
+            {
+                MessageBox.Show("Пустая печать");
+            }
+            else
+            {
+                OpenPrintDialog(); 
+            }
+        }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -110,12 +131,12 @@ namespace Notepad
                     filePath = openFileDialog.FileName;
                     fileName = openFileDialog.FileName.Split('\\').Last();
                     var fileStream = openFileDialog.OpenFile();
-                    
-                    using (StreamReader reader =new StreamReader(fileStream))
-                    {
-                        fileContent = reader.ReadToEnd();
-                    }
 
+                    fileContent = File.ReadAllText(filePath, encoding);
+                    //using (StreamReader reader = new StreamReader(fileStream, encoding))
+                    //{
+                    //    fileContent = reader.ReadToEnd();
+                    //}
                     changed = true;
                     richTextBox1.Text = fileContent;
                     changed = false;
@@ -181,13 +202,8 @@ namespace Notepad
             {
                 return;
             }
-            using (StreamWriter streamWriter = new StreamWriter(filePath, false, encoding))
-            {
-                foreach (var line in richTextBox1.Text.Split('\n'))
-                {
-                    streamWriter.WriteLine(line);
-                }
-            }
+            SaveFile();
+            //File.WriteAllText(filePath, richTextBox1.Text, encoding);
             changed = false;
             this.Text = string.Join("*", this.Text.Split('*').Skip(1).ToList());
 
@@ -204,7 +220,10 @@ namespace Notepad
                 
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    File.WriteAllText(saveFileDialog.FileName, richTextBox1.Text);
+                    filePath = saveFileDialog.FileName;
+                    fileName = saveFileDialog.FileName;
+                    SaveFile();
+                    //File.WriteAllText(saveFileDialog.FileName, richTextBox1.Text, encoding);
                 }
             }
         }
@@ -215,7 +234,9 @@ namespace Notepad
             {
                 fileName = "Undetected";
                 this.Text = fileName +" - " + Text.Split('-').Last().Trim();
+                changed = true;
                 richTextBox1.Text = string.Empty;
+                changed = false;
                 RichTextBoxAviable();
                 return;
             }
@@ -348,7 +369,11 @@ namespace Notepad
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             richTextBox1.SelectionFont = new Font(richTextBox1.Font.FontFamily, (float)numericUpDown1.Value);
-
+            if (!changed && !richTextBox1.ReadOnly)
+            {
+                this.Text = "*" + this.Text;
+            }
+            changed = true;
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -373,6 +398,45 @@ namespace Notepad
             if (!string.IsNullOrEmpty(richTextBox1.SelectedText))
                 Clipboard.SetDataObject(richTextBox1.SelectedText);
                 richTextBox1.SelectedText = string.Empty;
+        }
+
+        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            richTextBox1.SelectAll();
+        }
+
+        private void domainUpDown1_SelectedItemChanged(object sender, EventArgs e)
+        {
+            switch (domainUpDown1.SelectedItem)
+            {
+                case "ASCII":
+                    encoding = Encoding.ASCII;
+                    richTextBox1.AppendText("a");
+                    break;
+                case "UTF-7":
+                    encoding = Encoding.UTF7;
+                    richTextBox1.AppendText("7");
+                    break;
+                case "UTF-8":
+                    encoding = Encoding.UTF8;
+                    richTextBox1.AppendText("8");
+                    break;
+                case "UTF-16":
+                    encoding = Encoding.Unicode;
+                    richTextBox1.AppendText("16");
+                    break;
+                case "UTF-32":
+                    encoding = Encoding.UTF32;
+                    richTextBox1.AppendText("32");
+                    break;
+                default:
+                    break;
+            }
+            if (!changed && !richTextBox1.ReadOnly)
+            {
+                this.Text = "*" + this.Text;
+            }
+            changed = true;
         }
     }
 }
