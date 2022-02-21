@@ -1,6 +1,6 @@
 # Notepad
 ### Made in Russia
-
+![](https://img.shields.io/github/languages/top/RK-A/Notepad) ![](https://img.shields.io/github/last-commit/RK-A/Notepad)
 ## Technologies
 **C# WinForms**
 
